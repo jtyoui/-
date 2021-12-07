@@ -1,6 +1,6 @@
 <template>
   <div>
-    <video autoplay loop class="video-bg">
+    <video autoplay loop class="video-bg" muted>
       <source src="https://jtyoui.oss-accelerate-overseas.aliyuncs.com/video/register.mp4" type="video/mp4">
     </video>
 
