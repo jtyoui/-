@@ -14,8 +14,8 @@
 
       <div class="name">
         <span class="text">首页</span>
-        <span class="text">关于我<del class="small">们</del></span>
         <span class="text">联系我<del class="small">们</del></span>
+        <span class="text">退出登陆</span>
       </div>
     </div>
   </div>
@@ -32,7 +32,7 @@ const search = ref("")
 <style scoped>
 .head {
   height: 80px;
-  background-color: rgb(220, 214, 214);
+  background-color: rgba(255, 255, 255);
 }
 
 .header {

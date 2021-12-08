@@ -6,8 +6,14 @@ import 'vue3-video-play/dist/style.css'
 import 'element-plus/dist/index.css'
 import './assets/vampire.css'
 import Router from './router'
+import * as ElIconModules from '@element-plus/icons'
+
 
 const app = createApp(App)
+for (let iconName in ElIconModules) {
+    app.component(iconName, ElIconModules[iconName])
+}
+
 app.use(Router)
 app.use(ElementPlus)
 app.use(vue3videoPlay)
