@@ -7,9 +7,13 @@ package vampire
 import "time"
 
 type People struct {
-	UUid      string    `json:"uuid"        gorm:"comment:僵尸码;column:uuid;primaryKey"`
-	CreatedAt time.Time `json:"-"           gorm:"comment:创建日期"                      binding:"isdefault"`
+	UUid      string    `json:"-"           gorm:"comment:僵尸码;column:uuid;primaryKey"`
+	CreatedAt time.Time `json:"create_time" gorm:"comment:创建日期"                      binding:"isdefault"`
 	Name      string    `json:"name"        gorm:"comment:昵称;column:name"             binding:"min=2,max=10"`
 	BirthDate time.Time `json:"birth_date"  gorm:"comment:出生年月;column:birth_date"    binding:"required"`
-	Gender    rune      `json:"gender"      gorm:"comment:性别;column:gender"           binding:"oneof=男 女"`
+	Gender    string    `json:"gender"      gorm:"comment:性别;column:gender"           binding:"oneof=男 女"`
+}
+
+func (People) TableName() string {
+	return "SysPeople"
 }

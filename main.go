@@ -40,9 +40,11 @@ func InitDatabase() {
 	if err = db.AutoMigrate(&vampire.People{}); err != nil {
 		panic(err)
 	}
+	vampire.GDb = db
 }
 
 func InitRun() {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	_ = router.SetTrustedProxies(nil)
 
@@ -62,7 +64,8 @@ func InitRun() {
 	public := router.Group("api")
 	publicRouter := ginRouter.GinRouter{Router: public}
 	publicRouter.AutoRouter(
-		&vampire.User{},
+		&vampire.Index{},
+		&vampire.Register{},
 	)
 	if err := router.Run(":25461"); err != nil {
 		panic(err)

@@ -6,10 +6,27 @@ package vampire
 
 import "github.com/gin-gonic/gin"
 
-type User struct {
-	Token string `json:"token" binding:"required"`
+type Index struct {
+	Token string `json:"token" form:"token" binding:"required"`
 }
 
-func (l User) PostLogin(c *gin.Context) {
+func (l *Index) GetLogin(c *gin.Context) {
+	if err := c.ShouldBindQuery(l); err != nil {
+		Err(LoginCode, c)
+		return
+	}
+	people, ok := login[People]("uuid", l.Token)
+	if !ok {
+		Err(LoginCode, c)
+		return
+	}
+	Success(people, c)
+}
 
+func (l *Index) login() (people *People, ok bool) {
+	if err := GDb.Where("uuid = ?", l.Token).First(&people).Error; err != nil {
+		return
+	}
+	ok = true
+	return
 }
