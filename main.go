@@ -6,6 +6,9 @@ package main
 
 import (
 	"embed"
+	"flag"
+	"fmt"
+	"github.com/BurntSushi/toml"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-middleware/ginDist"
 	"github.com/golang-middleware/ginRouter"
@@ -19,6 +22,24 @@ import (
 
 //go:embed web/dist
 var efs embed.FS
+
+//go:embed config.toml
+var Config string
+
+// InitConfig 初始化配置文件
+func InitConfig() {
+	paths := flag.String("f", "", "配置文件的路径")
+	flag.Parse()
+	var err error
+	if *paths != "" {
+		_, err = toml.DecodeFile(*paths, &vampire.GConfig)
+	} else {
+		_, err = toml.Decode(Config, &vampire.GConfig)
+	}
+	if err != nil {
+		panic("配置文件加载失败")
+	}
+}
 
 func InitDatabase() {
 	db, err := gorm.Open(vampire.InitMysql(), &gorm.Config{
@@ -44,14 +65,19 @@ func InitDatabase() {
 }
 
 func InitRun() {
-	gin.SetMode(gin.ReleaseMode)
+	if vampire.GConfig.System.Release {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	router := gin.Default()
 	_ = router.SetTrustedProxies(nil)
+
+	api := vampire.GConfig.System.PrefixRouter
 
 	dist := ginDist.AutoReplace{
 		F: func(url string) string {
 			suffix := path.Ext(url)
-			if !strings.HasPrefix(url, "/api") && suffix == "" {
+			if !strings.HasPrefix(url, "/"+api) && suffix == "" {
 				return ginDist.DefaultRouterHtml
 			}
 			return url
@@ -61,18 +87,19 @@ func InitRun() {
 	// 中间间
 	router.Use(dist.Default(efs))
 
-	public := router.Group("api")
+	public := router.Group(api)
 	publicRouter := ginRouter.GinRouter{Router: public}
 	publicRouter.AutoRouter(
 		&vampire.Index{},
 		&vampire.Register{},
 	)
-	if err := router.Run(":25461"); err != nil {
+	if err := router.Run(fmt.Sprintf(":%d", vampire.GConfig.System.Port)); err != nil {
 		panic(err)
 	}
 }
 
 func main() {
+	InitConfig()
 	InitDatabase()
 	InitRun()
 }
