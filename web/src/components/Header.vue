@@ -24,9 +24,19 @@
 
 <script setup>
 import {House, Search} from '@element-plus/icons'
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
 
 const search = ref("")
+const route = useRouter()
+
+onMounted(() => {
+  const vampire = localStorage.getItem("vampire")
+  if (!(vampire && vampire.trim().length)) {
+    route.push('/login')
+  }
+})
+
 </script>
 
 <style scoped>

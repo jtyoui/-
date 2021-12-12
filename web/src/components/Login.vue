@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {Avatar, Lock} from '@element-plus/icons'
 import axios from "axios"
 import {useRouter} from 'vue-router'
@@ -56,16 +56,24 @@ const ruleForm = reactive({
 function login() {
   const value = ruleForm.token
   if (value !== "") {
-    axios.get("http://localhost:8082/api/index/login?token=" + value).then(resp => {
+    axios.get("/api/index/login?token=" + value).then(resp => {
       if (resp.data.code !== 200) {
         alert(resp.data.msg)
       } else {
+        const json = JSON.stringify(resp.data.data);
+        localStorage.setItem("vampire", json)
         router.push({path: "/"})
       }
     })
   }
 }
 
+onMounted(() => {
+  const vampire = localStorage.getItem("vampire")
+  if (vampire) {
+    router.push('/')
+  }
+})
 </script>
 
 <style scoped>

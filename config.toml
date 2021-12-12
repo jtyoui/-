@@ -1,6 +1,6 @@
 [System] # 系统配置
-prefixRouter = "api"        # 路由前缀
-port = 8082                 # 路由端口
+prefixRouter = "api"         # 路由前缀
+port = 80                    # 路由端口
 release = false              # 正式环境
 
 [Mysql] # 数据库配置

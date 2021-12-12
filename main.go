@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/BurntSushi/toml"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-middleware/ginDist"
 	"github.com/golang-middleware/ginRouter"
@@ -70,6 +71,8 @@ func InitRun() {
 	}
 
 	router := gin.Default()
+
+	router.Use(cors.Default())
 	_ = router.SetTrustedProxies(nil)
 
 	api := vampire.GConfig.System.PrefixRouter
