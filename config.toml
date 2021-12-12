@@ -3,14 +3,13 @@ prefixRouter = "api"        # 路由前缀
 port = 8082                 # 路由端口
 release = false              # 正式环境
 
-
 [Mysql] # 数据库配置
 path = "49.232.114.127"
 port = 3306
 property = "charset=utf8mb4&parseTime=True&loc=Local"
 db = "vampire"
 username = "root"
-password = ""
+password = "#12bXbTBBhUkfu#PWI7"
 
 [Jwt] # Token校验
 signingKey = "ILoveYou"
@@ -22,6 +21,6 @@ imgWidth = 240
 imgHeight = 80
 
 [Email]
-address = ""
-secret = ""
+address = "jtyoui@qq.com"
+secret = "ebjamxrdrxffdbjg"
 ssl = false

@@ -38,28 +38,30 @@
 
               <div class="input">
                 <div class="distance">
-                  <el-input clearable minlength="2" maxlength="8" v-model="names.user" placeholder="昵称"
-                            :prefix-icon="User"/>
+                  <el-form :rules="ruleForm.rules" :model="ruleForm">
+                    <el-form-item prop="name">
+                      <el-input clearable v-model="ruleForm.name" placeholder="昵称" :prefix-icon="User" autofocus/>
+                    </el-form-item>
+                  </el-form>
+
                 </div>
 
                 <div class="distance">
-                  <el-select v-model="names.sex" placeholder="性别" :suffix-icon="Male" class="lengthen">
+                  <el-select v-model="names.gender" placeholder="性别" :suffix-icon="Male" class="lengthen">
                     <el-option v-for="item in options" :key="item" :label="item.label" :value="item.value"/>
                   </el-select>
                 </div>
 
                 <div class="distance">
-                  <el-date-picker v-model="names.age" type="date" placeholder="年龄" style="width: 100%;"
-                                  value-format="yyyy-MM-dd"/>
+                  <el-date-picker v-model="names.birth_date" type="date" placeholder="年龄" style="width: 100%;"/>
                 </div>
 
                 <div class="distance center">
-                  <el-button type="primary" :icon="Stamp" :loading="loading" auto-insert-space>
+                  <el-button type="primary" :icon="Stamp" :loading="loading" auto-insert-space @click="register">
                     点 击 注 册
                   </el-button>
                 </div>
               </div>
-
             </el-main>
           </el-container>
         </el-container>
@@ -73,12 +75,15 @@
 <script setup>
 import {Male, Stamp, User} from '@element-plus/icons'
 import {reactive, ref} from "vue";
+import axios from "axios";
+import {useRouter} from "vue-router";
 
 const names = reactive({
-  "user": "",
-  "sex": "",
-  "age": ""
+  "name": "",
+  "gender": "",
+  "birth_date": ""
 })
+const router = useRouter()
 
 const loading = ref(false)
 
@@ -93,6 +98,24 @@ const options = ref([
   }
 ])
 
+const ruleForm = reactive({
+  name: "",
+  rules: {
+    name: [{required: true, max: 10, min: 4, message: "昵称的长度为4到10位", trigger: 'blur'}]
+  }
+})
+
+function register() {
+  names.name = ruleForm.name
+  axios.post("http://localhost:8082/api/register/logon", names).then(resp => {
+    if (resp.data.code !== 200) {
+      alert(resp.data.msg)
+    } else {
+      alert("请记住你的唯一僵尸码：" + resp.data.data)
+      router.push({path: "/login"})
+    }
+  })
+}
 </script>
 
 <style scoped>

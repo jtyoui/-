@@ -14,11 +14,17 @@
       </div>
 
       <div class="token">
-        <el-input clearable maxlength="16" v-model="token" placeholder="请输入唯一的僵尸码" show-password :prefix-icon="Lock"/>
+        <el-form :model="ruleForm" :rules="ruleForm.rules">
+          <el-form-item prop="token">
+            <el-input clearable minlength="32" maxlength="32" v-model="ruleForm.token" placeholder="请输入唯一的僵尸码"
+                      show-password
+                      :prefix-icon="Lock" autofocus/>
+          </el-form-item>
+        </el-form>
       </div>
 
       <div class="button">
-        <el-button type="primary" class="len" :icon="Avatar" :loading="loading" auto-insert-space>
+        <el-button type="primary" class="len" :icon="Avatar" :loading="loading" auto-insert-space @click="login">
           点 击 登 陆
         </el-button>
       </div>
@@ -33,11 +39,33 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {reactive, ref} from "vue";
 import {Avatar, Lock} from '@element-plus/icons'
+import axios from "axios"
+import {useRouter} from 'vue-router'
 
-const token = ref("")
 const loading = ref(false)
+const router = useRouter()
+const ruleForm = reactive({
+  token: "",
+  rules: {
+    token: [{required: true, max: 32, min: 32, message: "僵尸码长度为32位", trigger: 'blur'}]
+  }
+})
+
+function login() {
+  const value = ruleForm.token
+  if (value !== "") {
+    axios.get("http://localhost:8082/api/index/login?token=" + value).then(resp => {
+      if (resp.data.code !== 200) {
+        alert(resp.data.msg)
+      } else {
+        router.push({path: "/"})
+      }
+    })
+  }
+}
+
 </script>
 
 <style scoped>
