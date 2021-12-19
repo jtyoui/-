@@ -13,9 +13,9 @@
       </div>
 
       <div class="name">
-        <span class="text">首页</span>
+        <span class="text" @click="index">首页</span>
         <span class="text">联系我<del class="small">们</del></span>
-        <span class="text">退出登陆</span>
+        <span class="text">关于网站</span>
       </div>
     </div>
   </div>
@@ -37,6 +37,9 @@ onMounted(() => {
   }
 })
 
+function index() {
+  route.push('/')
+}
 </script>
 
 <style scoped>
@@ -68,6 +71,7 @@ onMounted(() => {
 
 .text {
   padding-left: 15%;
+  cursor: pointer;
 }
 
 .small {
