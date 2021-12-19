@@ -16,7 +16,7 @@
     </div>
     <div class="arrow">
       <el-icon :size="100">
-        <ArrowRightBold/>
+        <ArrowRightBold @click="video"/>
       </el-icon>
     </div>
   </div>
@@ -28,7 +28,9 @@ import Header from "./Header.vue"
 
 import {reactive} from "vue";
 import {ArrowRightBold} from '@element-plus/icons'
+import {useRouter} from 'vue-router'
 
+const router = useRouter()
 const options = reactive({
   width: "100%",
   height: "600px",
@@ -41,6 +43,10 @@ const options = reactive({
   control: true,
   volume: 0.3
 })
+
+function video() {
+  router.push({path: "/video"})
+}
 </script>
 
 <style scoped>
@@ -65,6 +71,7 @@ const options = reactive({
   margin-top: 170px;
   width: 10%;
   float: right;
+  cursor: pointer;
 }
 
 </style>

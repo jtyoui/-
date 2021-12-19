@@ -3,72 +3,29 @@
   <el-container>
     <el-aside class="aside">
       <div v-for="option in message" :key="option">
-        <div class="head">
-          <el-row style="height: 55px">
-            <el-icon :size="20" class="icon">
-              <component :is="option.icon"/>
-            </el-icon>
-            &emsp;
-            <h3><a :href="option.link">{{ option.name }}</a></h3>
-          </el-row>
-          <hr/>
-        </div>
+        <el-button type="primary" class="head" @click="videos(option.index)" :icon="option.icon">
+          {{ option.name }}
+        </el-button>
+        <hr/>
+
       </div>
     </el-aside>
-    <el-container>
+    <el-container style="height: 800px">
       <el-header class="title">
         www.我和僵尸有个约会.com
       </el-header>
 
       <el-main>
-
         <el-row>
-          <div class="row">
-            <vue3-video-play v-bind="options"/>
-            <span># 我和僵尸有个约会1——马小玲爱上我</span>
-          </div>
-          <div class="row">
-            <vue3-video-play v-bind="options"/>
-            <span># 我和僵尸有个约会1——马小玲爱上我</span>
-          </div>
-          <div class="row">
-            <vue3-video-play v-bind="options"/>
-            <span># 我和僵尸有个约会1——马小玲爱上我</span>
+          <div v-for="video in videos(1)" :key="video">
+            <div class="row">
+              <el-alert :title="video.title " type="success" center show-icon :closable="false"></el-alert>
+              <video class="video" onmouseover="play()" onmouseout="pause()" muted @click="play(video.id)">
+                <source :src="video.src" type="video/mp4">
+              </video>
+            </div>
           </div>
         </el-row>
-
-        <el-row class="top">
-          <div class="row">
-            <vue3-video-play v-bind="options"/>
-            <span># 我和僵尸有个约会1——马小玲爱上我</span>
-          </div>
-          <div class="row">
-            <vue3-video-play v-bind="options"/>
-            <span># 我和僵尸有个约会1——马小玲爱上我</span>
-          </div>
-          <div class="row">
-            <vue3-video-play v-bind="options"/>
-            <span># 我和僵尸有个约会1——马小玲爱上我</span>
-          </div>
-        </el-row>
-
-
-        <el-row class="top">
-          <div class="row">
-            <vue3-video-play v-bind="options"/>
-            <span># 我和僵尸有个约会1——马小玲爱上我</span>
-          </div>
-          <div class="row">
-            <vue3-video-play v-bind="options"/>
-            <span># 我和僵尸有个约会1——马小玲爱上我</span>
-          </div>
-          <div class="row">
-            <vue3-video-play v-bind="options"/>
-            <span># 我和僵尸有个约会1——马小玲爱上我</span>
-          </div>
-        </el-row>
-
-
       </el-main>
     </el-container>
   </el-container>
@@ -77,64 +34,56 @@
 <script setup>
 import Header from "./Header.vue"
 import {reactive} from "vue";
+import {useRouter} from 'vue-router'
 
+const router = useRouter()
 
 const message = reactive([
-  {"name": "僵约一", "icon": "star-filled", "link": ""},
-  {"name": "僵约二", "icon": "ship", "link": ""},
-  {"name": "僵约三", "icon": "apple", "link": ""},
-  {"name": "精彩短片", "icon": "video-camera", "link": ""},
-  {"name": "剪辑短片", "icon": "video-camera-filled", "link": ""},
-  {"name": "网友提供", "icon": "data-line", "link": ""},
-  {"name": "开幕片段", "icon": "platform", "link": ""},
-  {"name": "各种音乐", "icon": "service", "link": ""},
-  {"name": "精彩图片", "icon": "picture", "link": ""},
-  {"name": "交流论坛", "icon": "share", "link": ""},
-  {"name": "个人信息", "icon": "user", "link": ""},
+  {"name": "僵约一", "icon": "star-filled", "index": 1},
+  {"name": "僵约二", "icon": "ship", "index": 2},
+  {"name": "僵约三", "icon": "apple", "index": 3},
+  {"name": "精彩短片", "icon": "video-camera", "index": 4},
+  {"name": "剪辑短片", "icon": "video-camera-filled", "index": 5},
+  {"name": "网友提供", "icon": "data-line", "index": 6},
+  {"name": "开幕片段", "icon": "platform", "index": 7},
+  {"name": "各种音乐", "icon": "service", "index": 8},
+  {"name": "精彩图片", "icon": "picture", "index": 9},
+  {"name": "交流论坛", "icon": "share", "index": 10},
+  {"name": "个人信息", "icon": "user", "index": 11},
 ])
 
-const options = reactive({
-  width: "369px",
-  height: "207px",
-  title: "我和僵尸有个约会开头",
-  src: "https://jtyoui.oss-accelerate-overseas.aliyuncs.com/video/login.mp4",
-  muted: true,
-  webFullScreen: false,
-  autoPlay: true,
-  loop: true,
-  control: true,
-  volume: 0.3,
-  controlBtns: [
-    "fullScreen",
-    "audioTrack",
-    "quality",
-    "speedRate",
-    "volume",
-  ]
-})
+function videos(index) {
+  console.log(index)
+  const lists = []
+  for (let i = 0; i < 15; i++) {
+    const options = {
+      id: "123",
+      title: "我和僵尸有我和僵尸有个约会开头个约会开头",
+      src: "https://jtyoui.oss-accelerate-overseas.aliyuncs.com/video/login.mp4"
+    }
+    lists.push(options)
+  }
+  return lists
+}
 
+function play(id) {
+  router.push({path: "/play", query: {"id": id}})
+}
 </script>
 
 
 <style scoped>
 
 .aside {
-  width: 200px;
+  width: 180px;
+  height: 800px;
   border-right: rgba(115, 115, 101, 0.19) solid 5px;
 }
 
 .head {
   width: 150px;
-  margin: 0 auto;
-}
-
-.icon {
-  float: left;
-  margin-top: 25px;
-}
-
-a {
-  text-decoration: none;
+  height: 60px;
+  margin: 2px auto 0;
 }
 
 .title {
@@ -145,10 +94,15 @@ a {
 }
 
 .row {
-  margin: 0 auto;
+  width: 400px;
+  height: 225px;
+  margin: 0 50px 50px 50px;
+  cursor: pointer;
 }
 
-.top {
-  margin-top: 20px;
+.video {
+  width: 400px;
+  height: 225px;
 }
+
 </style>

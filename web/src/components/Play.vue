@@ -1,44 +1,46 @@
 <template>
   <Header/>
-  <el-row style="margin-top: 30px">
-    <div class="video">
-      <vue3-video-play v-bind="options"/>
-      <div class="top">
-        <el-icon :size="20">
-          <share/>
-        </el-icon>
-        <span class="tittle">&emsp;我和僵尸有个约会1——马小玲爱上我</span>
-        <span class="start">
-        <el-icon :size="24"><star/></el-icon>
-        <span> 20</span>
-      </span>
+  <el-container>
+    <el-main>
+      <div class="video">
+        <vue3-video-play v-bind="options"/>
+        <div class="top">
+          <el-icon :size="20">
+            <share/>
+          </el-icon>
+          <span class="tittle">&emsp;{{ options.title }}</span>
+          <el-button icon="star" class="start" type="success">20</el-button>
+        </div>
       </div>
-    </div>
-    <div class="box">
-      <el-menu :default-openeds="[0]">
-        <el-sub-menu :index="0">
-          <template #title>
-            <el-icon>
-              <Menu/>
-            </el-icon>
-            <span>我和僵尸有个约会一</span>
-          </template>
-          <div class="list" style="overflow: auto">
-            <div v-for="i in 20" :key="i" class="infinite-list-item">
-              <el-menu-item :index="i">
-                <el-tooltip :content="'P'+i+'&emsp;我和僵尸有我和僵尸有个约会个约会'+i" placement="top" show-after="800">
-                  <div class="name">
-                    P{{ i }}&emsp;我和僵尸有我和僵尸有个约会个约会{{ i }}
-                  </div>
-                </el-tooltip>
-                <div class="time">50:00</div>
-              </el-menu-item>
+    </el-main>
+
+    <el-aside width="30%">
+      <div class="box">
+        <el-menu :default-openeds="[0]">
+          <el-sub-menu :index="0">
+            <template #title>
+              <el-icon>
+                <Menu/>
+              </el-icon>
+              <span>我和僵尸有个约会一</span>
+            </template>
+            <div class="list" style="overflow: auto">
+              <div v-for="(video,i) in getList()" :key="i" class="infinite-list-item">
+                <el-menu-item :index="i" @click="play(video.id)">
+                  <el-tooltip :content="video.name" placement="top" show-after="800">
+                    <div class="name">
+                      P{{ i + 1 }}&emsp;{{ video.name }}
+                    </div>
+                  </el-tooltip>
+                  <div class="time">{{ video.time }}</div>
+                </el-menu-item>
+              </div>
             </div>
-          </div>
-        </el-sub-menu>
-      </el-menu>
-    </div>
-  </el-row>
+          </el-sub-menu>
+        </el-menu>
+      </div>
+    </el-aside>
+  </el-container>
 </template>
 
 <script setup>
@@ -58,11 +60,27 @@ const options = reactive({
   control: true,
   volume: 0.3
 })
+
+function getList() {
+  const list = []
+  for (let i = 0; i < 10; i++) {
+    list.push({
+      id: "1234",
+      name: "我和僵尸有个约会第一部#第" + i + "集",
+      time: "56:00"
+    })
+  }
+  return list
+}
+
+function play(id) {
+  options.title = "我和僵尸有个约会开头" + id
+}
 </script>
 
 <style scoped>
 .video {
-  margin-left: 20%;
+  margin: 0 15%;
 }
 
 .box {
@@ -78,8 +96,6 @@ const options = reactive({
 
 .start {
   float: right;
-  margin-right: 100px;
-  font-size: 25px;
 }
 
 .top {
