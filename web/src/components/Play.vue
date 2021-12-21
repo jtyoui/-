@@ -52,7 +52,8 @@ const options = reactive({
   width: "984px",
   height: "700px",
   title: "我和僵尸有个约会开头",
-  src: "https://jtyoui.oss-accelerate-overseas.aliyuncs.com/video/login.mp4",
+  src: "http://localhost:3030/hls/我和僵尸有个约会3/01.mp4/master.m3u8",
+  type: "m3u8",
   muted: false,
   webFullScreen: false,
   autoPlay: false,
@@ -74,8 +75,10 @@ function getList() {
 }
 
 function play(id) {
-  options.title = "我和僵尸有个约会开头" + id
+  options.title = ""
+  options.src = ""
 }
+
 </script>
 
 <style scoped>

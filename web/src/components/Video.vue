@@ -7,9 +7,9 @@
           {{ option.name }}
         </el-button>
         <hr/>
-
       </div>
     </el-aside>
+
     <el-container style="height: 800px">
       <el-header class="title">
         www.我和僵尸有个约会.com
@@ -20,9 +20,9 @@
           <div v-for="video in videos(1)" :key="video">
             <div class="row">
               <el-alert :title="video.title " type="success" center show-icon :closable="false"></el-alert>
-              <video class="video" onmouseover="play()" onmouseout="pause()" muted @click="play(video.id)">
-                <source :src="video.src" type="video/mp4">
-              </video>
+              <vue3-video-play width="400px" height="225px" :src="video.src" type="m3u8" :control="false"
+                               @play="play(video.id)">
+              </vue3-video-play>
             </div>
           </div>
         </el-row>
@@ -53,13 +53,12 @@ const message = reactive([
 ])
 
 function videos(index) {
-  console.log(index)
   const lists = []
   for (let i = 0; i < 15; i++) {
     const options = {
       id: "123",
       title: "我和僵尸有我和僵尸有个约会开头个约会开头",
-      src: "https://jtyoui.oss-accelerate-overseas.aliyuncs.com/video/login.mp4"
+      src: "http://localhost:3030/hls/我和僵尸有个约会3/01.mp4/master.m3u8",
     }
     lists.push(options)
   }
@@ -98,11 +97,6 @@ function play(id) {
   height: 225px;
   margin: 0 50px 50px 50px;
   cursor: pointer;
-}
-
-.video {
-  width: 400px;
-  height: 225px;
 }
 
 </style>
