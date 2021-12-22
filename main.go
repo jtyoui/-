@@ -12,8 +12,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-middleware/ginDist"
-	"github.com/golang-middleware/ginRouter"
 	"github.com/jtyoui/my-date-with-a-vampire/vampire"
+	"github.com/jtyoui/my-date-with-a-vampire/vampire/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 	"path"
@@ -59,7 +59,7 @@ func InitDatabase() {
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	if err = db.AutoMigrate(&vampire.People{}); err != nil {
+	if err = db.AutoMigrate(&model.User{}, &model.Video{}); err != nil {
 		panic(err)
 	}
 	vampire.GDb = db
@@ -91,11 +91,11 @@ func InitRun() {
 	router.Use(dist.Default(efs))
 
 	public := router.Group(api)
-	publicRouter := ginRouter.GinRouter{Router: public}
-	publicRouter.AutoRouter(
-		&vampire.Index{},
-		&vampire.Register{},
-	)
+	public.GET("/login", vampire.Login)
+	public.POST("/logon", vampire.Logon)
+	public.POST("/videoList", vampire.VideoByType)
+	public.GET("/play", vampire.VideoPlay)
+
 	if err := router.Run(fmt.Sprintf(":%d", vampire.GConfig.System.Port)); err != nil {
 		panic(err)
 	}

@@ -3,7 +3,7 @@
   <el-container>
     <el-aside class="aside">
       <div v-for="option in message" :key="option">
-        <el-button type="primary" class="head" @click="videos(option.index)" :icon="option.icon">
+        <el-button type="primary" class="head" @click="load(option.index)" :icon="option.icon">
           {{ option.name }}
         </el-button>
         <hr/>
@@ -17,10 +17,10 @@
 
       <el-main>
         <el-row>
-          <div v-for="video in videos(1)" :key="video">
+          <div v-for="video in videos.list" :key="video">
             <div class="row">
               <el-alert :title="video.title " type="success" center show-icon :closable="false"></el-alert>
-              <vue3-video-play width="400px" height="225px" :src="video.src" type="m3u8" :control="false"
+              <vue3-video-play width="400px" height="225px" :src="video.url" type="m3u8" :control="false"
                                @play="play(video.id)">
               </vue3-video-play>
             </div>
@@ -33,8 +33,9 @@
 
 <script setup>
 import Header from "./Header.vue"
-import {reactive} from "vue";
+import {onMounted, reactive} from "vue";
 import {useRouter} from 'vue-router'
+import axios from "axios";
 
 const router = useRouter()
 
@@ -52,18 +53,27 @@ const message = reactive([
   {"name": "个人信息", "icon": "user", "index": 11},
 ])
 
-function videos(index) {
-  const lists = []
-  for (let i = 0; i < 15; i++) {
-    const options = {
-      id: "123",
-      title: "我和僵尸有我和僵尸有个约会开头个约会开头",
-      src: "http://localhost:3030/hls/我和僵尸有个约会3/01.mp4/master.m3u8",
-    }
-    lists.push(options)
+const videos = reactive({
+  "list": []
+})
+
+onMounted(() => {
+  load(3)
+})
+
+function load(type) {
+  const params = {
+    "type": type,
+    "page": 0,
+    "size": 10
   }
-  return lists
+  axios.post("http://localhost:12480/api/videoList", params).then((resp) => {
+    if (resp.status === 200 && resp.data.code === 200) {
+      videos.list = resp.data.data
+    }
+  })
 }
+
 
 function play(id) {
   router.push({path: "/play", query: {"id": id}})

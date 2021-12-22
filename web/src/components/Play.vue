@@ -3,12 +3,12 @@
   <el-container>
     <el-main>
       <div class="video">
-        <vue3-video-play v-bind="options"/>
+        <vue3-video-play v-bind="options.video"/>
         <div class="top">
           <el-icon :size="20">
             <share/>
           </el-icon>
-          <span class="tittle">&emsp;{{ options.title }}</span>
+          <span class="tittle">&emsp;{{ options.video.title }}</span>
           <el-button icon="star" class="start" type="success">20</el-button>
         </div>
       </div>
@@ -22,14 +22,14 @@
               <el-icon>
                 <Menu/>
               </el-icon>
-              <span>我和僵尸有个约会一</span>
+              <span>{{ options.menu }}</span>
             </template>
             <div class="list" style="overflow: auto">
-              <div v-for="(video,i) in getList()" :key="i" class="infinite-list-item">
-                <el-menu-item :index="i" @click="play(video.id)">
-                  <el-tooltip :content="video.name" placement="top" show-after="800">
+              <div v-for="(video,i) in options.list" :key="i" class="infinite-list-item">
+                <el-menu-item :index="i" @click="play(video)">
+                  <el-tooltip :content="video.title" placement="top" show-after="800">
                     <div class="name">
-                      P{{ i + 1 }}&emsp;{{ video.name }}
+                      P{{ i + 1 }}&emsp;{{ video.title }}
                     </div>
                   </el-tooltip>
                   <div class="time">{{ video.time }}</div>
@@ -45,38 +45,45 @@
 
 <script setup>
 import Header from "./Header.vue"
-import {reactive} from "vue";
+import {onMounted, reactive} from "vue";
 import {Menu} from '@element-plus/icons'
+import axios from "axios";
 
 const options = reactive({
-  width: "984px",
-  height: "700px",
-  title: "我和僵尸有个约会开头",
-  src: "http://localhost:3030/hls/我和僵尸有个约会3/01.mp4/master.m3u8",
-  type: "m3u8",
-  muted: false,
-  webFullScreen: false,
-  autoPlay: false,
-  loop: false,
-  control: true,
-  volume: 0.3
+  video: {
+    width: "984px",
+    height: "700px",
+    title: "",
+    src: "",
+    type: "m3u8",
+    muted: false,
+    webFullScreen: false,
+    autoPlay: false,
+    loop: false,
+    control: true,
+    volume: 0.3
+  },
+  list: [],
+  menu: ""
 })
 
-function getList() {
-  const list = []
-  for (let i = 0; i < 10; i++) {
-    list.push({
-      id: "1234",
-      name: "我和僵尸有个约会第一部#第" + i + "集",
-      time: "56:00"
-    })
-  }
-  return list
-}
+onMounted(() => {
+  axios.get("http://localhost:12480/api/play?video_id=" + "1").then((resp) => {
+    if (resp.status === 200 && resp.data.code === 200) {
+      const data = resp.data.data
+      options.video.src = data.url
+      options.video.title = data.title
+      options.menu = data.name
+      options.list = data.list
+    }
+  })
+  console.log(options)
+})
 
-function play(id) {
-  options.title = ""
-  options.src = ""
+function play(self) {
+  console.log(self)
+  options.video.title = self.title
+  options.video.src = self.url
 }
 
 </script>
