@@ -1,8 +1,8 @@
-// Package vampire
+// Package common
 // @Time  : 2021/12/9 上午11:51
 // @Author: Jtyoui@qq.com
 // @note  : 状态码和异常
-package vampire
+package common
 
 import "errors"
 

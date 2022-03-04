@@ -56,7 +56,7 @@ const ruleForm = reactive({
 function login() {
   const value = ruleForm.token
   if (value !== "") {
-    axios.get("/api/index/login?token=" + value).then(resp => {
+    axios.get("/api/user/login?token=" + value).then(resp => {
       if (resp.data.code !== 200) {
         alert(resp.data.msg)
       } else {

@@ -107,7 +107,7 @@ const ruleForm = reactive({
 
 function register() {
   names.name = ruleForm.name
-  axios.post("/api/register/logon", names).then(resp => {
+  axios.post("/api/user/register", names).then(resp => {
     if (resp.data.code !== 200) {
       alert(resp.data.msg)
     } else {

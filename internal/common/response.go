@@ -1,18 +1,13 @@
-// Package vampire
+// Package common
 // @Time  : 2021/10/12 上午10:44
 // @Author: Jtyoui@qq.com
 // @note  : 响应数据类型
-package vampire
+package common
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jtyoui/my-date-with-a-vampire/config"
-	"gorm.io/gorm"
 	"net/http"
 )
-
-var GDb *gorm.DB
-var GConfig config.Config
 
 // 所有的响应数据格式
 type response struct {

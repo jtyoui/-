@@ -15,6 +15,15 @@ type Mysql struct {
 	Password string // 数据库密码
 }
 
-func (m *Mysql) Dsn() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?%s", m.Username, m.Password, m.Path, m.Port, m.Db, m.Property)
+func (m *Mysql) DSN() string {
+	return fmt.Sprintf("%s%s?%s", m.String(), m.Db, m.Property)
+}
+
+func (m *Mysql) String() string {
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/", m.Username, m.Password, m.Path, m.Port)
+}
+
+func (m *Mysql) CreateSQL() string {
+	sql := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;", m.Db)
+	return sql
 }

@@ -6,48 +6,27 @@ package main
 
 import (
 	"embed"
-	"flag"
 	"fmt"
-	"github.com/BurntSushi/toml"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-middleware/ginDist"
-	"github.com/jtyoui/my-date-with-a-vampire/vampire"
-	"github.com/jtyoui/my-date-with-a-vampire/vampire/model"
+	"github.com/jtyoui/gam"
+	"github.com/jtyoui/gam/web"
+	"github.com/jtyoui/my-date-with-a-vampire/config"
+	"github.com/jtyoui/my-date-with-a-vampire/internal/common"
+	"github.com/jtyoui/my-date-with-a-vampire/internal/list"
+	"github.com/jtyoui/my-date-with-a-vampire/internal/login"
+	"github.com/jtyoui/my-date-with-a-vampire/pkg"
 	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 	"path"
 	"strings"
 	"time"
 )
 
-//go:embed web/dist
+//go:embed web/dist config.toml
 var efs embed.FS
 
-//go:embed config.toml
-var Config string
-
-// InitConfig 初始化配置文件
-func InitConfig() {
-	paths := flag.String("f", "", "配置文件的路径")
-	flag.Parse()
-	var err error
-	if *paths != "" {
-		_, err = toml.DecodeFile(*paths, &vampire.GConfig)
-	} else {
-		_, err = toml.Decode(Config, &vampire.GConfig)
-	}
-	if err != nil {
-		panic("配置文件加载失败")
-	}
-}
-
 func InitDatabase() {
-	db, err := gorm.Open(vampire.InitMysql(), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true, // 表名单数
-		},
-	})
+	db, err := gorm.Open(common.InitMysql(), &gorm.Config{})
 	if err != nil {
 		panic("链接数据库失败")
 	}
@@ -59,50 +38,46 @@ func InitDatabase() {
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	if err = db.AutoMigrate(&model.User{}, &model.Video{}); err != nil {
+	if err = db.AutoMigrate(&login.UserModel{}, &list.VideoModel{}); err != nil {
 		panic(err)
 	}
-	vampire.GDb = db
+	common.GDb = db
 }
 
 func InitRun() {
-	if vampire.GConfig.System.Release {
+	if config.GConfig.System.Release {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	router := gin.Default()
-
-	router.Use(cors.Default())
 	_ = router.SetTrustedProxies(nil)
 
-	api := vampire.GConfig.System.PrefixRouter
+	api := config.GConfig.System.PrefixRouter
 
-	dist := ginDist.AutoReplace{
-		F: func(url string) string {
-			suffix := path.Ext(url)
-			if !strings.HasPrefix(url, "/"+api) && suffix == "" {
-				return ginDist.DefaultRouterHtml
-			}
-			return url
-		},
-	}
-
-	// 中间间
-	router.Use(dist.Default(efs))
+	dist := gam.NewDist()
+	dist.CustomRuleFunc(func(url string) string {
+		suffix := path.Ext(url)
+		if !strings.HasPrefix(url, "/"+api) && suffix == "" {
+			return web.DefaultRouterHtml
+		}
+		return url
+	})
+	router.Use(cors.Default())   // 跨越
+	router.Use(dist.LoadFs(efs)) // 中间间
 
 	public := router.Group(api)
-	public.GET("/login", vampire.Login)
-	public.POST("/logon", vampire.Logon)
-	public.POST("/videoList", vampire.VideoByType)
-	public.GET("/play", vampire.VideoPlay)
+	g := gam.NewGinRouter(public, nil)
 
-	if err := router.Run(fmt.Sprintf(":%d", vampire.GConfig.System.Port)); err != nil {
+	g.AutoRouter(&login.User{})
+
+	fmt.Printf("############### 请访问: http://%s:%d #########", pkg.GetLocalBoundIP(), config.GConfig.System.Port)
+	if err := router.Run(fmt.Sprintf("0.0.0.0:%d", config.GConfig.System.Port)); err != nil {
 		panic(err)
 	}
 }
 
 func main() {
-	InitConfig()
+	config.InitConfig(efs)
 	InitDatabase()
 	InitRun()
 }

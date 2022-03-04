@@ -1,15 +1,18 @@
-// Package vampire
+// Package common
 // @Time  : 2021/12/8 下午4:13
 // @Author: Jtyoui@qq.com
 // @note  : 数据库
-package vampire
+package common
 
 import (
 	"database/sql"
 	"fmt"
+	"github.com/jtyoui/my-date-with-a-vampire/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+var GDb *gorm.DB
 
 // 创建数据库并初始化
 func create(dsn string, driver string, createSql string) error {
@@ -31,20 +34,12 @@ func create(dsn string, driver string, createSql string) error {
 }
 
 func InitMysql() (drive gorm.Dialector) {
-	password := GConfig.Mysql.Password
-	host := GConfig.Mysql.Path
-	port := GConfig.Mysql.Port
-	username := GConfig.Mysql.Username
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/", username, password, host, port)
-	dbName := GConfig.Mysql.Db
-	createDB := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;", dbName)
-	// 不存在数据库自动初始化
-	if err := create(dsn, "mysql", createDB); err != nil {
+	conn := config.GConfig.Mysql
+	if err := create(conn.String(), "mysql", conn.CreateSQL()); err != nil { // 不存在数据库自动初始化
 		panic("创建数据库失败:" + err.Error())
 	}
-
 	drive = mysql.New(mysql.Config{
-		DSN:                       GConfig.Mysql.Dsn(),
+		DSN:                       conn.DSN(),
 		DefaultStringSize:         256,
 		DisableDatetimePrecision:  true,
 		DontSupportRenameIndex:    true,
