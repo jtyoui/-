@@ -15,6 +15,7 @@ import (
 	"github.com/jtyoui/my-date-with-a-vampire/internal/common"
 	"github.com/jtyoui/my-date-with-a-vampire/internal/list"
 	"github.com/jtyoui/my-date-with-a-vampire/internal/login"
+	"github.com/jtyoui/my-date-with-a-vampire/internal/play"
 	"github.com/jtyoui/my-date-with-a-vampire/pkg"
 	"gorm.io/gorm"
 	"path"
@@ -68,7 +69,7 @@ func InitRun() {
 	public := router.Group(api)
 	g := gam.NewGinRouter(public, nil)
 
-	g.AutoRouter(&login.User{})
+	g.AutoRouter(&login.User{}, &list.List{}, &play.Play{})
 
 	fmt.Printf("############### 请访问: http://%s:%d #########", pkg.GetLocalBoundIP(), config.GConfig.System.Port)
 	if err := router.Run(fmt.Sprintf("0.0.0.0:%d", config.GConfig.System.Port)); err != nil {

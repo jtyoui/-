@@ -67,7 +67,7 @@ function load(type) {
     "page": 0,
     "size": 10
   }
-  axios.post("http://localhost:12480/api/videoList", params).then((resp) => {
+  axios.post("/api/list/video", params).then((resp) => {
     if (resp.status === 200 && resp.data.code === 200) {
       videos.list = resp.data.data
     }

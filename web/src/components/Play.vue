@@ -68,7 +68,7 @@ const options = reactive({
 })
 
 onMounted(() => {
-  axios.get("http://localhost:12480/api/play?video_id=" + "1").then((resp) => {
+  axios.get("/api/play/id?videoId=" + "1").then((resp) => {
     if (resp.status === 200 && resp.data.code === 200) {
       const data = resp.data.data
       options.video.src = data.url
